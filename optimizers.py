@@ -54,6 +54,9 @@ class SVRG(Optimizer):
         return self.param_groups
     
     def update_u(self, next_u):
+        """
+        update u with full-batch gradients
+        """
         if self.__u is None:
             self.__u = copy.deepcopy(next_u)
         for prev_u_group, next_u_group in zip(self.__u, next_u):
@@ -131,6 +134,9 @@ class AUXILIARYOpt(Optimizer):
         return self.param_groups
     
     def update_param_groups(self, new_param_groups):
+        """
+        update alpha_j^{k+1} = x_k
+        """
         for old_param_group, new_param_group in zip(self.param_groups, new_param_groups):
             for old_param, new_param in zip(old_param_group["params"], new_param_group["params"]):
                 old_param.data = new_param.data.clone()

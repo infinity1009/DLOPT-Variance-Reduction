@@ -116,7 +116,7 @@ if __name__ == "__main__":
 
         from utils import warm_up, train_SAGA
         warm_up_loader = DataLoader(train_data, batch_size=1024, shuffle=True, num_workers=4)
-        warm_up(model, warm_up_loader, optimizer, loss_fn, device, total_train_num)
+        warm_up(model, warm_up_loader, optimizer, nn.CrossEntropyLoss(reduction="sum"), device, total_train_num)
         
         for epoch in range(args.epochs):
             t0 = time.time()

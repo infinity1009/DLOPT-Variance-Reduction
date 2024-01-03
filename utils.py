@@ -79,15 +79,16 @@ def train_SVRG(model, buddy_model, epoch, update_freq, optimizer, aux_optimizer,
     return total_loss / total_train_num
 
 def warm_up(model, train_loader, optimizer, loss_fn, device, total_train_num):
+    # calculate u_0
     model.train()
-
     optimizer.zero_grad()
     for b_x, b_y in train_loader:
         b_x = b_x.to(device)
         b_y = b_y.to(device)
         output = model(b_x)
-        loss = loss_fn(output, b_y) * b_x.size(0) / total_train_num
-        loss.backward()
+        loss += loss_fn(output, b_y) * b_x.size(0)
+    loss /= total_train_num 
+    loss.backward()
     optimizer.set_u() 
 
 def train_SAGA(model, buddy_model, b_x, b_y, optimizer, aux_optimizer, loss_fn, device, total_train_num):
@@ -98,18 +99,18 @@ def train_SAGA(model, buddy_model, b_x, b_y, optimizer, aux_optimizer, loss_fn, 
     b_x = b_x.to(device)
     b_y = b_y.to(device)
     output = model(b_x)
-    loss = loss_fn(output, b_y)
-    loss.backward()
+    loss = loss_fn(output, b_y) 
+    loss.backward() # calculate \Delta F_j(x_k)
 
     aux_optimizer.zero_grad()
     buddy_model = buddy_model.to(device)
     aux_output = buddy_model(b_x)
     aux_loss = loss_fn(aux_output, b_y)
-    aux_loss.backward()
+    aux_loss.backward() # calculate \Delta F_j(\alpha_j^k)
     
-    aux_optimizer.update_param_groups(optimizer.get_param_groups())
-    optimizer.step(aux_optimizer.get_param_groups())
-    optimizer.update_u(aux_optimizer.get_param_groups(), total_train_num)
+    aux_optimizer.update_param_groups(optimizer.get_param_groups()) # update \alpha_j
+    optimizer.step(aux_optimizer.get_param_groups()) # update x_k
+    optimizer.update_u(aux_optimizer.get_param_groups(), total_train_num) # update u_{k+1} by u_k, \Delta F_j(x_k), Delta F_j(\alpha_j^k)
 
     return loss.item()
 

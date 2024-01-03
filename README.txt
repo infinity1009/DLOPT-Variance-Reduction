@@ -16,17 +16,17 @@ To execute the code, the following examples demonstrate the command-line usage:
 
 - **SGD**:
   ```
-  python run.py --epochs 300 --optimizer_type SGD --lr 0.005
+  python run.py --epochs 300 --optimizer_type SGD --lr 0.001
   ```
 
 - **SVRG**:
   ```
-  python run.py --epochs 300 --optimizer_type SVRG --lr 0.005
+  python run.py --epochs 300 --optimizer_type SVRG --lr 0.001
   ```
 
 - **SAGA**:
   ```
-  python run.py --epochs 100 --optimizer_type SAGA --lr 0.005 --simple_model
+  python run.py --epochs 100 --optimizer_type SAGA --lr 0.001 --simple_model
   ```
 
 Note: Due to SAGA's substantial memory consumption for auxiliary information, the `simple_model` flag must be set for testing. 
